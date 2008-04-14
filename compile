@@ -1,6 +1,0 @@
-#!/bin/bash
-
-rm main
-cd ../../
-g++ -o main GUI.o Window.o Graph.o mole/molinator/Molinator_Window.h -lfltk -lXft -lfltk_images
-mv main hw/hw5/
