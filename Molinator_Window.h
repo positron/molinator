@@ -2,16 +2,17 @@
 
 using namespace Graph_lib;
 
+		//defaults
+		static Point LOCATION = Point(50,50);
+		static const int WIDTH = 500;
+		static const int HEIGHT = 500;
+		static string TITLE = "Molinator";
+
 class Molinator_Window : Window
 {
 	private:
 		bool destroyed;
 
-		//defaults
-		static const Point LOCATION(50,50);
-		static const int WIDTH = 500;
-		static const int HEIGHT = 500;
-		static const string TITLE = "Molinator";
 	public:
 		Molinator_Window()
 			: Window( LOCATION, WIDTH, HEIGHT, TITLE ),
@@ -32,6 +33,7 @@ class Molinator_Window : Window
 	protected:
 		void destroy()
 		{
+			hide();
 			destroyed = true;
 		}
-}
+};
