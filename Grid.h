@@ -1,4 +1,7 @@
-
+/* This class keeps track of where moles are in the grid. It is kind of
+ * useless in the basic version of our game but will be useful when we go
+ * for extra credit.
+ */
 class Grid
 {
 	public:
