@@ -24,6 +24,7 @@ class Molinator_Window : Window
 				destroyed(false)
 		{	}
 
+		//Don't do this.  Change it to the handler callback just deletes the stuff.
 		void wait_for_destroy()
 		{
 			while( !destroyed ) Fl::wait();

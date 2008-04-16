@@ -7,7 +7,11 @@ class Handler
 {
 		Handler( Molinator_Window w, void (*pt)(void) )
 			: win(w), cb_done(pt)
-		{		}
+		{
+			//create a window and call init() to draw stuff on it
+		}
+
+		virtual void init();
 
 	private:
 		//takes a void argument because it can either be a string name or a score
