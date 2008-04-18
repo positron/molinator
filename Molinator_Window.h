@@ -1,40 +1,22 @@
+#pragma once
 #include "../../GUI.h"
 
 using namespace Graph_lib;
 
-		//defaults
-		static Point LOCATION = Point(50,50);
-		static const int WIDTH = 500;
-		static const int HEIGHT = 500;
-		static string TITLE = "Molinator";
+//defaults
+static Point DEF_LOCATION = Point(50,50);
+static const int DEF_WIDTH = 500;
+static const int DEF_HEIGHT = 500;
+static string DEF_TITLE = "Molinator";
 
-class Molinator_Window : Window
+class Molinator_Window : public Window
 {
-	private:
-		bool destroyed;
-
 	public:
 		Molinator_Window()
-			: Window( LOCATION, WIDTH, HEIGHT, TITLE ),
-				destroyed(false)
+			: Window( DEF_LOCATION, DEF_WIDTH, DEF_HEIGHT, DEF_TITLE )
 		{	}
 
 		Molinator_Window( const string& title )
-			: Window( LOCATION, WIDTH, HEIGHT, title ),
-				destroyed(false)
+			: Window( DEF_LOCATION, DEF_WIDTH, DEF_HEIGHT, title )
 		{	}
-
-		//Don't do this.  Change it to the handler callback just deletes the stuff.
-		void wait_for_destroy()
-		{
-			while( !destroyed ) Fl::wait();
-			Fl::redraw();
-		}
-
-	protected:
-		void destroy()
-		{
-			hide();
-			destroyed = true;
-		}
 };

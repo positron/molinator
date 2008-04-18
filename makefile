@@ -1,11 +1,11 @@
 CC=g++
 CFLAGS=-c
 LDFLAGS=../../GUI.o ../../Window.o ../../Graph.o -lfltk -lXft -lfltk_images
-SOURCES=Molinator_Window.h Start_Window.h Molinator.cpp
+SOURCES=Handler.h Handler.cpp Molinator_Window.h Start_Handler.h Start_Handler.cpp Molinator.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=game
 
-all: $(SOURCES) $(EXECUTABLE)
+all: $(EXECUTABLE)
 	
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
