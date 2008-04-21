@@ -1,4 +1,7 @@
+#include "../../std_lib_facilities.h"
 #include "Molinator_Window.h"
+#include "Mole.h"
+#include "Grid.h"
 
 Molinator_Window::Molinator_Window()
 	: Window( DEF_LOCATION, DEF_WIDTH, DEF_HEIGHT, DEF_TITLE ),
@@ -25,6 +28,7 @@ void Molinator_Window::init()
 void Molinator_Window::cb_play( Address, Address addr )
 {
 	static_cast<Molinator_Window*>(addr)->play();
+	cout << "done cb_play()\n";
 }
 
 //this function is called when the play button has been clicked
@@ -36,6 +40,8 @@ void Molinator_Window::play()
 	//start drawing game
 	game = true;
 	grid->attach( this );
+	grid->add_random_mole();
+	cout << "done adding random mole " << endl;
 }
 
 //called when the x button (top right hand corner of window) is hit... I think
@@ -52,7 +58,7 @@ int Molinator_Window::handle( int event )
 		return Window::handle(event);
 	Mole* m = grid->handle_mouse( Fl::event_x(), Fl::event_y() );
 	//frees up the memory used by the Mole
-	delete m;
+//	if( m != NULL ) delete m;
 	//let the event propogate down
 	return Window::handle(event);
 }

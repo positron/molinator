@@ -21,7 +21,8 @@ static Color colors[] = {
 class Mole
 {
 	public:
-		Mole( int, int );
+		Mole( Point );
+		Mole( Point, int );
 		
 		inline int points() { return num_points; }
 		inline Color color() { return *m_color; }
@@ -34,4 +35,7 @@ class Mole
 		Color* m_color; //note, a pointer so we don't have to initalize it in the
 										//constructor, because there is not Color() constructor
 		Point center;
+		int radius;
+
+		static const int DEF_RADIUS = 30;
 };
