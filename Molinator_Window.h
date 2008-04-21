@@ -1,6 +1,7 @@
 #pragma once
 #include <FL/Fl_Widget.H>
 #include "../../GUI.h"
+#include "../../Graph.h"
 #include "Grid.h"
 
 using namespace Graph_lib;

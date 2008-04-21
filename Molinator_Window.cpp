@@ -39,7 +39,7 @@ void Molinator_Window::play()
 	detach( but_play );
 	//start drawing game
 	game = true;
-	grid->attach( this );
+	grid->attach( * this );
 	grid->add_random_mole();
 	cout << "done adding random mole " << endl;
 }

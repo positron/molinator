@@ -20,7 +20,7 @@ class Grid
 {
 	public:
 		Grid();
-		void attach( Molinator_Window* w );
+		void attach( Molinator_Window& w );
 		inline bool is_empty( int, int );
 		inline Mole* contains( int, int );
 		bool add( Mole *, int, int );

@@ -27,7 +27,7 @@ class Mole
 		inline int points() { return num_points; }
 		inline Color color() { return *m_color; }
 
-		void attach( Molinator_Window* w );
+		void attach( Molinator_Window& w );
 	private:
 		Molinator_Window* win;
 		//points user gets when "whacked"
@@ -36,6 +36,7 @@ class Mole
 										//constructor, because there is not Color() constructor
 		Point center;
 		int radius;
+		Circle circle;
 
 		static const int DEF_RADIUS = 30;
 };
