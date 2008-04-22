@@ -28,6 +28,7 @@ class Mole
 		inline Color color() { return *m_color; }
 
 		void attach( Molinator_Window& w );
+		void detach();
 	private:
 		Molinator_Window* win;
 		//points user gets when "whacked"

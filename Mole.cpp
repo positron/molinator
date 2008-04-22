@@ -19,10 +19,16 @@ void Mole::attach( Molinator_Window& w )
 {
 	win = &w;
 	cout << sizeof( win ) << " " << sizeof( *win ) << " ";
-	cout << "attaching mole" << endl;
 //	fl_pie( center.x, center.y, 2*radius, 2*radius, 0, 360 );
 	circle.set_color( *m_color );
 	circle.set_style( Line_style( Line_style::solid, radius ) );
 	win->attach( circle );
-	cout << "done attaching circle ";
+	//TODO: attach text (number of points)
+}
+
+void Mole::detach()
+{
+	cout << "detaching mole ";
+	win->detach( circle );
+	//TODO: detach text
 }

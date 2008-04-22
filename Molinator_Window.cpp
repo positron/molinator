@@ -13,6 +13,11 @@ Molinator_Window::Molinator_Window()
 	init();
 }
 
+Molinator_Window::~Molinator_Window()
+{
+	delete grid;
+}
+
 void Molinator_Window::init()
 {
 	Fl::redraw();
@@ -47,7 +52,8 @@ void Molinator_Window::play()
 //called when the x button (top right hand corner of window) is hit... I think
 void Molinator_Window::cb_click( Fl_Widget*, void* addr )
 {
-	cout << "Exiting via cb_click\n"; //just in case this causes weird behaviour in Windows
+	//notify just in case this causes weird behaviour in Windows
+	cout << "Exiting via cb_click\n"; 
 	static_cast<Molinator_Window*>(addr)->hide();
 }
 
@@ -57,8 +63,17 @@ int Molinator_Window::handle( int event )
 	if( event != FL_RELEASE || !game )
 		return Window::handle(event);
 	Mole* m = grid->handle_mouse( Fl::event_x(), Fl::event_y() );
-	//frees up the memory used by the Mole
-//	if( m != NULL ) delete m;
+	//if we clicked on a Mole, delete it and add another one
+	if( m != NULL ) 
+	{
+		//TODO: add points to score and check if the time is up
+		//TODO: if time is up call another function to detach the grid and display high scores
+		
+		//frees up the memory used by the Mole
+		delete m;
+		Fl::redraw();
+		grid->add_random_mole();
+	}
 	//let the event propogate down
 	return Window::handle(event);
 }

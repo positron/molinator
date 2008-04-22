@@ -20,12 +20,16 @@ class Grid
 {
 	public:
 		Grid();
-		void attach( Molinator_Window& w );
+		~Grid();
+
 		inline bool is_empty( int, int );
 		inline Mole* contains( int, int );
 		bool add( Mole *, int, int );
 		Mole* remove( int, int );
 		Mole* handle_mouse( int, int );
+
+		void attach( Molinator_Window& w );
+		void detach();
 
 		void add_random_mole();
 	private:

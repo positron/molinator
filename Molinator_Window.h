@@ -22,6 +22,7 @@ class Molinator_Window : public Window
 {
 	public:
 		Molinator_Window();
+		~Molinator_Window();
 
 		//show the start screen
 		void init();
