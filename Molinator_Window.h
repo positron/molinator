@@ -33,6 +33,7 @@ class Molinator_Window : public Window
 		void play();
 
 		static void cb_click( Fl_Widget*, void* );
+		//cb_timeout
 
 	private:
 		string name;
