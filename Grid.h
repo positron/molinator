@@ -1,6 +1,7 @@
 #pragma once
 #include "Molinator_Window.h"
 #include "Mole.h"
+#include "../../GUI.h"
 
 //forward declares
 class Molinator_Window;
@@ -22,6 +23,7 @@ class Grid
 		Grid();
 		~Grid();
 
+		Graph_lib::Lines* grid_lines;
 		inline bool is_empty( int, int );
 		inline Mole* contains( int, int );
 		bool add( Mole *, int, int );

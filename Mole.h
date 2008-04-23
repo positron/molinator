@@ -27,6 +27,8 @@ class Mole
 		inline int points() { return num_points; }
 		inline Color color() { return *m_color; }
 
+		bool hit_mole( int, int );
+
 		void attach( Molinator_Window& w );
 		void detach();
 	private:

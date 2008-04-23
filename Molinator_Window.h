@@ -43,4 +43,6 @@ class Molinator_Window : public Window
 		Grid* grid;
 
 		Button but_play;
+		Text instruct;
+		In_box name_field;
 };

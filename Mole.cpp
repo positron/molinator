@@ -18,7 +18,6 @@ Mole::Mole( Point cen, int rad )
 void Mole::attach( Molinator_Window& w )
 {
 	win = &w;
-	cout << sizeof( win ) << " " << sizeof( *win ) << " ";
 //	fl_pie( center.x, center.y, 2*radius, 2*radius, 0, 360 );
 	circle.set_color( *m_color );
 	circle.set_style( Line_style( Line_style::solid, radius ) );
@@ -28,7 +27,13 @@ void Mole::attach( Molinator_Window& w )
 
 void Mole::detach()
 {
-	cout << "detaching mole ";
 	win->detach( circle );
 	//TODO: detach text
+}
+
+bool Mole::hit_mole( int x, int y )
+{
+	int dist = sqrt( (x-center.x)*(x-center.x) + (y-center.y)*(y-center.y) );
+	cout << dist << " (" << x << "," << y << ")\n";
+	return dist < radius;
 }

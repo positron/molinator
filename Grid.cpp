@@ -18,6 +18,8 @@ Grid::~Grid()
 			if( m != NULL ) delete m;
 		}
 	}
+	if( win != NULL ) detach();
+	delete grid_lines;
 }
 
 void Grid::attach( Molinator_Window& w )
@@ -25,7 +27,18 @@ void Grid::attach( Molinator_Window& w )
 	win = &w;
 	cout << sizeof( win ) << " " << sizeof( *win ) << " ";
 	cout << "attaching grid to window" << endl;
-	//TODO:draw the grid
+	//draw the grid
+	int x_size = WIDTH;
+	int y_size = HEIGHT;
+	int x_grid = HEIGHT/ROWS;
+	int y_grid = WIDTH/COLS;
+	
+	grid_lines = new Lines();
+	for (int x=x_grid;x<x_size;x+=x_grid)
+		grid_lines->add(Point(x,0),Point(x,y_size));
+	for (int y=y_grid;y<y_size;y+=y_grid)
+		grid_lines->add(Point(0,y),Point(x_size,y));
+	win->attach(*grid_lines);
 }
 
 void Grid::detach()
@@ -65,7 +78,12 @@ Mole* Grid::handle_mouse( int x, int y )
 	int row = x / (WIDTH / ROWS);
 	int col = y / (HEIGHT / COLS);
 	cout << "click on grid (" << row << ", " << col << ") ";
-	return remove( row, col );
+	Mole* m = contains( row, col );
+	if( m == NULL ) return NULL;
+//	if( m->hit_mole( x - row * (WIDTH/ROWS), y - col * (HEIGHT/COLS) ) )
+	if( m->hit_mole( x, y ) )
+		return remove( row, col );
+	return NULL;
 }
 
 void Grid::add_random_mole()
