@@ -81,6 +81,8 @@ Mole* Grid::handle_mouse( int x, int y )
 	Mole* m = contains( row, col );
 	if( m == NULL ) return NULL;
 //	if( m->hit_mole( x - row * (WIDTH/ROWS), y - col * (HEIGHT/COLS) ) )
+  //only remove the mole if the user actually hit the mole, not if he just
+	//clicked in the grid
 	if( m->hit_mole( x, y ) )
 		return remove( row, col );
 	return NULL;

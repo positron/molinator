@@ -31,9 +31,11 @@ void Mole::detach()
 	//TODO: detach text
 }
 
+//this function returns true if (x,y) is inside the mole (ie the user clicked
+//on the mole. 
 bool Mole::hit_mole( int x, int y )
 {
+	//use distance formula to calculate distance between click and center of mole
 	int dist = sqrt( (x-center.x)*(x-center.x) + (y-center.y)*(y-center.y) );
-	cout << dist << " (" << x << "," << y << ")\n";
 	return dist < radius;
 }
