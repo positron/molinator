@@ -16,7 +16,7 @@ void start()
 int time()
 {
 	unsigned long time_final = clock() / CLOCKS_PER_SEC;
-	return time_final-time_initial;
+	return time_final - time_initial;
 }
 
 };

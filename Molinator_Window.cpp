@@ -9,7 +9,9 @@ Molinator_Window::Molinator_Window()
 		game(false),
 		but_play( Point(50, 50), 60, 20, "Play", cb_play ),
 		instruct( Point(60,25), "instruct.jpg" ),
-		name_field( Point(200,300), 200, 30, "Enter your name" )
+		name_field( Point(200,300), 200, 30, "Enter your name" ),
+		clock_text( Point( DEF_WIDTH - 50, DEF_HEIGHT - 2 ), "00" ),
+		score_text( Point( 2, DEF_HEIGHT - 2 ), "Score: 0" )
 {
 	grid = new Grid(); //why doesn't just grid(), work above?
 	//TODO: figure out how to make the window so you can't resize it
@@ -18,7 +20,12 @@ Molinator_Window::Molinator_Window()
 
 Molinator_Window::~Molinator_Window()
 {
-	delete grid;
+	if( grid != NULL ) delete grid;
+}
+
+void Molinator_Window::display_scores()
+{
+	//TODO: display top scores and game statistics: your score, accuracy, and precision
 }
 
 void Molinator_Window::init()
@@ -28,7 +35,6 @@ void Molinator_Window::init()
 	attach( but_play );
 	attach( instruct );
 	attach( name_field );
-	//TODO: add In_Box and text explaining how to play the game
 	//add callback so the window closes when we hit the x button
 	callback( *cb_click, this );
 	Fl::run();
@@ -43,25 +49,25 @@ void Molinator_Window::cb_play( Address, Address addr )
 void Molinator_Window::play()
 {
 	//TODO: get username from the In_Box and save it;
-	//if( ask("do you really be anonymous?" )
+	//TODO? if( ask("do you really be anonymous?" )
 	//detach everything on the start screen
 	detach( but_play );
 	detach( instruct );
 	detach( name_field );
-	//start the timer function
-	Timer::start();
+	//start clock
+	Fl::add_timeout( 1.0, * cb_update_clock, this );
+	//set the cursor to be a cross
+	cursor( FL_CURSOR_CROSS );
+	//draw clock and score
+	clock_text.set_font_size( 20 );
+	score_text.set_font_size( 20 );
+	attach( clock_text );
+	attach( score_text );
+	Fl::redraw();
 	//start drawing game
 	game = true;
 	grid->attach( * this );
-	grid->add_random_mole();
-}
-
-//called when the x button (top right hand corner of window) is hit... I think
-void Molinator_Window::cb_click( Fl_Widget*, void* addr )
-{
-	//notify just in case this causes weird behaviour in Windows
-	cout << "Exiting via cb_click\n"; 
-	static_cast<Molinator_Window*>(addr)->hide();
+	grid->start_game();
 }
 
 int Molinator_Window::handle( int event )
@@ -70,17 +76,75 @@ int Molinator_Window::handle( int event )
 	if( event != FL_RELEASE || !game )
 		return Window::handle(event);
 	Mole* m = grid->handle_mouse( Fl::event_x(), Fl::event_y() );
+	num_clicks++;
 	//if we clicked on a Mole, delete it and add another one
 	if( m != NULL ) 
 	{
-		//TODO: add points to score and check if the time is up
-		//TODO: if time is up call another function to detach the grid and display high scores
-		
+		score += m->points();
+		moles_whacked++;
+		sum_dist += m->dist();
+		//update score_text
+		score_text.set_label( "Score: " + int_to_string( score ) );
+		//don't need Fl::redraw because add_random_mole() will do it for us
+
 		//frees up the memory used by the Mole
 		delete m;
-		Fl::redraw();
+		//add a new mole to replace the lost one
 		grid->add_random_mole();
 	}
 	//let the event propogate down
 	return Window::handle(event);
+}
+
+void Molinator_Window::end_game()
+{
+	cursor( FL_CURSOR_DEFAULT );
+	game = false;
+	grid->detach();
+	delete grid;
+	display_scores();
+	//TODO: don't just cout this, display it on the final screen
+	if( num_clicks == 0 ) num_clicks++; //to prevent floating point exception
+	cout << "\n-----FINAL STATS------\n";
+	cout << "accuracy: " << static_cast<int>(100*(static_cast<double>(moles_whacked)/num_clicks+0.5)) << "%\n";
+	cout << "precision: " << (sum_dist/num_clicks) << "px\n";
+	cout << "score: " << score << "\n";
+}
+
+void Molinator_Window::update_clock()
+{
+	clock++;
+	string str = int_to_string(clock);
+	if( str.length() == 1 ) str = "0" + str;
+	clock_text.set_label( str );
+	Fl::redraw();
+	if( clock == 60 )
+	{ 
+		end_game();
+		//cancel clock timeout
+		Fl::remove_timeout( *cb_update_clock, this );
+	}
+}
+
+//called when the x button (top right hand corner of window) is hit... I think
+void Molinator_Window::cb_click( Fl_Widget*, void* addr )
+{
+	static_cast<Molinator_Window*>(addr)->hide();
+}
+
+void Molinator_Window::cb_update_clock( void* addr )
+{
+	Fl::repeat_timeout( 1.0, *cb_update_clock, addr );
+	static_cast<Molinator_Window*>(addr)->update_clock();
+}
+
+//helper function
+string Molinator_Window::int_to_string( int i )
+{
+	//if this is the only way to do this C++ is retarded
+	stringstream ss;
+	string str;
+	ss << i;
+	ss >> str;
+	return str;
 }

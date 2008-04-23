@@ -1,6 +1,6 @@
 CC=g++
-CFLAGS=-c
-LDFLAGS=../../GUI.o ../../Window.o ../../Graph.o -lfltk -lXft -lfltk_images
+CFLAGS=-c -w
+LDFLAGS=-w ../../GUI.o ../../Window.o ../../Graph.o -lfltk -lXft -lfltk_images
 SOURCES=Molinator_Window.h Molinator_Window.cpp Molinator.cpp Grid.h Grid.cpp Mole.h Mole.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=game
