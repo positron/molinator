@@ -58,7 +58,7 @@ void Mole::detach()
 bool Mole::hit_mole( int x, int y )
 {
 	//use distance formula to calculate distance between click and center of mole
-	distance = sqrt( (x-center.x)*(x-center.x) + (y-center.y)*(y-center.y) );
+	distance = sqrt( static_cast<double>( (x-center.x)*(x-center.x) + (y-center.y)*(y-center.y) ) );
 //	cout << "dist " << dist << " rad " << radius << "\n";
 	return distance < radius;
 }
