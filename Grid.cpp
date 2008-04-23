@@ -1,4 +1,5 @@
 #include "Grid.h"
+#include "Black_Mole.h"
 #include "../../std_lib_facilities.h"
 
 Grid::Grid()
@@ -97,9 +98,13 @@ void Grid::add_random_mole()
 		col = randint( COLS );
 	} while ( !is_empty( row, col ) );
 	Point center( (row+0.5)*WIDTH/ROWS, (col+0.5)*HEIGHT/COLS );
-	//why do we have to do this?  We have to make a new Mole.  if we just make a temp one the program segfaults...
-	Mole* m = new Mole( center, WIDTH/ROWS/2 - 4 );
+	int rad = WIDTH/ROWS/2 - 4;
+	Mole* m;
+	//randomly add black mole
+	if( randint(10) == 0 )
+		m = new Black_Mole( center, rad );
+	else
+		m = new Mole( center, rad );
 	m->attach( * win );
 	grid[row][col] = m;
-//	grid[row][col]->attach( * win );
 }

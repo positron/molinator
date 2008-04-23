@@ -23,6 +23,7 @@ class Mole
 	public:
 		Mole( Point );
 		Mole( Point, int );
+		Mole( Point, int, Color, int );
 		
 		inline int points() { return num_points; }
 		inline Color color() { return *m_color; }

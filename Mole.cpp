@@ -15,6 +15,11 @@ Mole::Mole( Point cen, int rad )
 	m_color = &colors[ randint( 5 ) ];
 }
 
+Mole::Mole( Point cen, int rad, Color col, int pts )
+	: center(cen), radius(rad), circle( cen, rad / 2 ), m_color(&col), num_points(pts)
+{
+}
+
 void Mole::attach( Molinator_Window& w )
 {
 	win = &w;

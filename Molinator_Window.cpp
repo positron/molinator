@@ -43,6 +43,7 @@ void Molinator_Window::cb_play( Address, Address addr )
 void Molinator_Window::play()
 {
 	//TODO: get username from the In_Box and save it;
+	//if( ask("do you really be anonymous?" )
 	//detach everything on the start screen
 	detach( but_play );
 	detach( instruct );
