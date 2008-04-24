@@ -22,9 +22,6 @@ Molinator_Window::Molinator_Window()
 Molinator_Window::~Molinator_Window()
 {
 	if( grid != NULL ) delete grid;
-	grid = NULL; //if we call grid->function() after deleting grid the result is
-	             //undefined, so sometimes it works right and sometimes it crashes
-							 //actually no it doesn't... dang
 }
 
 void Molinator_Window::display_scores()
@@ -103,11 +100,13 @@ int Molinator_Window::handle( int event )
 void Molinator_Window::end_game()
 {
 	cursor( FL_CURSOR_DEFAULT );
+	//stupid hack because our cb code has issues
 	game = false;
 	grid->detach();
-	delete grid;
+//	delete grid;
+//	grid = NULL;
 //what?? even though we just deleted grid we can still call the method test and it couts stuff..??
-//	grid->test();
+//	grid->test(); //This is dumb...
 	display_scores();
 	//TODO: don't just cout this, display it on the final screen
 	if( num_clicks == 0 ) num_clicks++; //to prevent floating point exception

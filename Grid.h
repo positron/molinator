@@ -37,7 +37,7 @@ class Grid
 
 		inline bool is_empty( int, int );
 		inline Mole* contains( int, int );
-		/*inline*/ Molinator_Window* window() { return win; }
+		inline Molinator_Window* window() { return win; }
 		bool add( Mole *, int, int );
 		Mole* remove( int, int );
 		Mole* handle_mouse( int, int );
