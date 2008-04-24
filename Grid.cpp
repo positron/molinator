@@ -7,10 +7,11 @@ Grid::Grid()
 {
 }
 
+//precondition: detach has already been called
 Grid::~Grid()
 {
 	//delete any Moles left in the grid
-	Mole* m;
+/*	Mole* m;
 	for( int r = 0; r < ROWS; r++ )
 	{
 		for( int c = 0; c < COLS; c++ )
@@ -19,8 +20,9 @@ Grid::~Grid()
 			if( m != NULL ) delete m;
 		}
 	}
-//	if( win != NULL ) detach();
-	if( grid_lines != NULL ) delete grid_lines;
+	*/
+//	if( grid_lines != NULL ) 
+		delete grid_lines;
 }
 
 void Grid::attach( Molinator_Window& w )
@@ -158,20 +160,25 @@ void Grid::start_game()
 void Grid::cb_add_random_mole( void* addr )
 {
 	Grid* g = static_cast<Grid*>(addr);
-	if( !g->window()->get_game() ) return;
 	if( g == NULL ) return;
+	if( !g->window()->get_game() ) return;
 	g->add_random_mole();
 }
 
 void Grid::cb_timeout( void* addr )
 {
+	cerr << "|.|";
 	if( addr == NULL ) return;
 	TO_Data* dat = static_cast<TO_Data*>(addr);
 	Grid* g = dat->grid;
+	cerr << "|..|";
+	if( g == NULL ) return;
+	cerr << "|.x.|";
 	if( !g->window()->get_game() ) return;
 	//annoying bug: check if the grid has been removed in the intervening time
-	if( g == NULL ) return;
+	cerr << "|...|";
 	g->timeout_remove_mole( dat->row, dat->col );
+	cerr << "|....|";
 	//since we had to make a new TO_Data we have to free up it's memory
 	delete addr;
 }

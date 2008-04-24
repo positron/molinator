@@ -29,9 +29,9 @@ Mole::Mole( Point cen, int rad, Color col, int pts )
 {
 }
 
+//preconding: detach has already been called
 Mole::~Mole()
 {
-	if( win != NULL ) detach();
 	delete circle;
 	//TODO: delete text object
 }

@@ -11,7 +11,8 @@ Molinator_Window::Molinator_Window()
 		instruct( Point(60,25), "instruct.jpg" ),
 		name_field( Point(200,300), 200, 30, "Enter your name" ),
 		clock_text( Point( DEF_WIDTH - 50, DEF_HEIGHT - 2 ), "00" ),
-		score_text( Point( 2, DEF_HEIGHT - 2 ), "Score: 0" )
+		score_text( Point( 2, DEF_HEIGHT - 2 ), "Score: 0" ),
+		clock(0), score(0), num_clicks(0), moles_whacked(0), sum_dist(0)
 {
 	grid = new Grid(); //why doesn't just grid(), work above?
 	//TODO: figure out how to make the window so you can't resize it
@@ -21,6 +22,9 @@ Molinator_Window::Molinator_Window()
 Molinator_Window::~Molinator_Window()
 {
 	if( grid != NULL ) delete grid;
+	grid = NULL; //if we call grid->function() after deleting grid the result is
+	             //undefined, so sometimes it works right and sometimes it crashes
+							 //actually no it doesn't... dang
 }
 
 void Molinator_Window::display_scores()
@@ -102,11 +106,13 @@ void Molinator_Window::end_game()
 	game = false;
 	grid->detach();
 	delete grid;
+//what?? even though we just deleted grid we can still call the method test and it couts stuff..??
+//	grid->test();
 	display_scores();
 	//TODO: don't just cout this, display it on the final screen
 	if( num_clicks == 0 ) num_clicks++; //to prevent floating point exception
 	cout << "\n-----FINAL STATS------\n";
-	cout << "accuracy: " << static_cast<int>(100*(static_cast<double>(moles_whacked)/num_clicks+0.5)) << "%\n";
+	cout << "accuracy: " << static_cast<int>(100*(static_cast<double>(moles_whacked)/num_clicks+0.005)) << "%\n";
 	cout << "precision: " << (sum_dist/num_clicks) << "px\n";
 	cout << "score: " << score << "\n";
 }
@@ -118,7 +124,7 @@ void Molinator_Window::update_clock()
 	if( str.length() == 1 ) str = "0" + str;
 	clock_text.set_label( str );
 	Fl::redraw();
-	if( clock == 60 )
+	if( clock == 10 )
 	{ 
 		end_game();
 		//cancel clock timeout
