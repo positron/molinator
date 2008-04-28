@@ -7,11 +7,11 @@
 Molinator_Window::Molinator_Window()
 	: Window( DEF_LOCATION, DEF_WIDTH, DEF_HEIGHT, DEF_TITLE ),
 		game(false),
-		but_play( Point(50, 50), 60, 20, "Play", cb_play ),
+		but_play( Point(200, 400), 150, 20, "Play the game!", cb_play ),
 		instruct( Point(60,25), "instruct.jpg" ),
 		name_field( Point(200,300), 200, 30, "Enter your name" ),
-		clock_text( Point( DEF_WIDTH - 50, DEF_HEIGHT - 2 ), "00" ),
-		score_text( Point( 2, DEF_HEIGHT - 2 ), "Score: 0" ),
+		clock_text( Point( DEF_WIDTH - 50, DEF_HEIGHT - 1 ), "00" ),
+		score_text( Point( 2, DEF_HEIGHT - 1 ), "Score: 0" ),
 		clock(0), score(0), num_clicks(0), moles_whacked(0), sum_dist(0)
 {
 	grid = new Grid(); //why doesn't just grid(), work above?
@@ -123,7 +123,7 @@ void Molinator_Window::update_clock()
 	if( str.length() == 1 ) str = "0" + str;
 	clock_text.set_label( str );
 	Fl::redraw();
-	if( clock == 10 )
+	if( clock == 60 )
 	{ 
 		end_game();
 		//cancel clock timeout

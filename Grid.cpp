@@ -167,20 +167,14 @@ void Grid::cb_add_random_mole( void* addr )
 
 void Grid::cb_timeout( void* addr )
 {
-	cerr << "1.";
 	if( addr == NULL ) return;
 	TO_Data* dat = static_cast<TO_Data*>(addr);
 	Grid* g = dat->grid;
-	cerr << "2.";
 	if( g == NULL ) return;
-	cerr << "3.";
 	if( static_cast<TO_Data*>(addr)->grid == NULL ) return;
-	cerr << "3.";
 	if( !g->window()->get_game() ) return;
 	//annoying bug: check if the grid has been removed in the intervening time
-	cerr << "4.";
 	g->timeout_remove_mole( dat->row, dat->col );
-	cerr << "5.";
 	//since we had to make a new TO_Data we have to free up it's memory
 	delete addr;
 }

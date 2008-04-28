@@ -46,6 +46,7 @@ class Mole
 		Point center;
 		int radius;
 		Circle* circle;
+		Text* m_points;
 
 		//for stats
 		int distance;

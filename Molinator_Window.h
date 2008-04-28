@@ -62,6 +62,6 @@ class Molinator_Window : public Window
 		Text score_text;
 		Text clock_text;
 		Button but_play;
-		Text instruct;
+		Image instruct;
 		In_box name_field;
 };
