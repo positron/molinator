@@ -1,5 +1,8 @@
+#pragma once
+
 namespace Score_IO
 {
+static const string SCORE_FILE = "scores.txt";
 
 /* The user should call add_score first, then top_scores to view the top five
  * scores. 
@@ -13,9 +16,19 @@ namespace Score_IO
  * Postcondition:
  * same as precondition
  */
-void add_score( string name, int score )
-{
-	//TODO
+void add_score( string name, int new_score )
+{/*
+	fstream fst( SCORE_FILE.c_str() );
+	int score, pointer;
+	string line;
+	do
+	{
+		pointer = fst.tellg();
+		line = fst.getline();
+		//atoi returns the first int it finds, isn't affected by the chars after
+		score = atoi( line );
+	}
+	while( score > new_score ); */
 }
 
 /* Returns a vector of strings formatted like this:
@@ -26,15 +39,21 @@ void add_score( string name, int score )
  */
 vector<string> top_scores()
 {
-	//TODO
+	vector<string> v;
+	v.push_back("philip                  18320");
+	v.push_back("Dr. Daugherty           2545");
+	v.push_back("noob                    100");
+	v.push_back("lol_failz               0");
+	v.push_back("eric                    -255");
+	return v;
 }
 
 };
 /* Example of the scores file: (note the spaces in the username)
  *
- * Philip 10315
- * Fatal1ty 815
- * Dr. Daugherty 300
- * 3p1c_Fa1lz lol 0
- * noob -400
+ * 10315 philip
+ * 815 Dr. Daugherty
+ * 300 eric
+ * 0 noob
+ * -400 lol_failz
  */

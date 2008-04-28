@@ -10,33 +10,30 @@
 Mole::Mole( Point cen )
 	: center(cen)
 {
-	Point m_text;
-	int rand = randint( 5 );
-	num_points = point_vals[ rand ];
-	stringstream helper;
-	helper << num_points;
-	m_points = new Text( Point(cen.x-9, cen.y+3), helper.str() );
-	m_color = &colors[ randint( 5 ) ];
-	radius = WIDTH/ROWS/2 * point_radius_coef[rand];
+	Mole_Vals vals = rand_vals();
+	num_points = vals.points;
+	m_points = new Text( Point( cen.x + vals.text_offset, cen.y+4 ), vals.text_points );
+	m_color = vals.col;
+	m_txt_col = vals.text_color;
+	radius = vals.radius;
 	circle = new Circle( center, radius/2 );
 }
 
 Mole::Mole( Point cen, int rad )
 	: center(cen), radius(rad), circle( new Circle( cen, rad / 2 ) )
 {
-	stringstream helper;
-	helper << num_points;
-	m_points = new Text( Point(cen.x-9, cen.y+3), helper.str() );
-	num_points = point_vals[ randint( 5 ) ];
-	m_color = &colors[ randint( 5 ) ];
+	Mole_Vals vals = rand_vals();
+	num_points = vals.points;
+	m_points = new Text( Point( cen.x + vals.text_offset, cen.y+4 ), vals.text_points );
+	m_color = vals.col;
+	m_txt_col = vals.text_color;
+	circle = new Circle( center, radius/2 );
 }
 
-Mole::Mole( Point cen, int rad, Color col, int pts )
-	: center(cen), radius(rad), circle( new Circle( cen, rad / 2 ) ), m_color(&col), num_points(pts)
+Mole::Mole( Point cen, int rad, Color col, int pts, Color txt_col, Text* txt )
+	: center(cen), radius(rad), circle( new Circle( cen, rad / 2 ) ),
+		m_color(&col), num_points(pts), m_txt_col(&txt_col), m_points( txt )
 {
-	stringstream helper;
-	helper << num_points;
-	m_points = new Text( Point(cen.x-9, cen.y+3), helper.str() );
 }
 
 //preconding: detach has already been called
@@ -53,7 +50,7 @@ void Mole::attach( Molinator_Window& w )
 //	fl_pie( center.x, center.y, 2*radius, 2*radius, 0, 360 );
 	circle->set_color( *m_color );
 	circle->set_style( Line_style( Line_style::solid, radius ) );
-	m_points->set_color( Color::black );
+	m_points->set_color( *m_txt_col );
 	m_points->set_font_size( 10 );
 	win->attach( *circle );
 	win->attach( *m_points );
@@ -76,4 +73,28 @@ bool Mole::hit_mole( int x, int y )
 	distance = sqrt( static_cast<double>( (x-center.x)*(x-center.x) + (y-center.y)*(y-center.y) ) );
 //	cout << "dist " << dist << " rad " << radius << "\n";
 	return distance < radius;
+}
+
+/* Function that every constructor can use to generate random values and their
+ * matching colors, offsets, radii, etc.
+ */
+Mole_Vals Mole::rand_vals()
+{
+	Mole_Vals val;
+	int rand = randint( 5 );
+	val.points = point_vals[ rand ];
+
+	stringstream helper;
+	helper << val.points;
+	val.text_points = helper.str();
+
+	val.radius = WIDTH/ROWS/2 * point_radius_coef[rand];
+
+	val.text_offset = text_offsets[rand];
+
+	rand = randint( 5 );
+	val.col = &colors[rand];
+
+	val.text_color = &text_colors[rand];
+	return val;
 }

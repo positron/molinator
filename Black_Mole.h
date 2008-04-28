@@ -8,7 +8,7 @@ class Black_Mole : public Mole
 {
 	public:
 		Black_Mole( Point pt, int rad )
-			: Mole( pt, rad, Color::black, BLACK_POINTS )
+			: Mole( pt, rad, Color::black, BLACK_POINTS, Color::black, new Text( Point(0,0), "" ) )
 		{
 		}
 };

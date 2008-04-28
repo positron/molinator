@@ -11,6 +11,7 @@ class Molinator_Window;
 //by the corresponding coefficient[i]
 static const int point_vals[] = { 5, 10, 20, 50, 100 };
 static const double point_radius_coef[] = { 1, .9, .75, .55, .4 };
+static const double text_offsets[] = { -3, -6, -5, -5, -9 };
 
 //random colors
 static Color colors[] = { 
@@ -19,14 +20,33 @@ static Color colors[] = {
 	Color(Color::green), 
 	Color(Color::yellow), 
 	Color(Color::magenta)
-	};
+};
+
+//text colors to match random background colors above
+static Color text_colors[] = {
+	Color(Color::white),
+	Color(Color::white),
+	Color(Color::black),
+	Color(Color::black),
+	Color(Color::black)
+};
+
+struct Mole_Vals
+{
+	int points;
+	string text_points;
+	int text_offset;
+	int radius;
+	Color* col;
+	Color* text_color;
+};
 
 class Mole
 {
 	public:
 		Mole( Point );
 		Mole( Point, int );
-		Mole( Point, int, Color, int );
+		Mole( Point, int, Color, int, Color, Text* );
 		~Mole();
 		
 		inline int points() { return num_points; }
@@ -38,11 +58,14 @@ class Mole
 		void attach( Molinator_Window& w );
 		void detach();
 	private:
+		Mole_Vals rand_vals();
+
 		Molinator_Window* win;
 		//points user gets when "whacked"
 		int num_points;
-		Color* m_color; //note, a pointer so we don't have to initalize it in the
-										//constructor, because there is not Color() constructor
+		Color* m_color;  //note, a pointer so we don't have to initalize it in the
+		Color* m_txt_col;//constructor, because there is not Color() constructor
+
 		Point center;
 		int radius;
 		Circle* circle;

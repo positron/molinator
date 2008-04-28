@@ -111,9 +111,10 @@ void Molinator_Window::end_game()
 	//TODO: don't just cout this, display it on the final screen
 	if( num_clicks == 0 ) num_clicks++; //to prevent floating point exception
 	cout << "\n-----FINAL STATS------\n";
+	cout << "score: " << score << "\n";
+	cout << "moles whacked: " << moles_whacked << "\n";
 	cout << "accuracy: " << static_cast<int>(100*(static_cast<double>(moles_whacked)/num_clicks+0.005)) << "%\n";
 	cout << "precision: " << (sum_dist/num_clicks) << "px\n";
-	cout << "score: " << score << "\n";
 }
 
 void Molinator_Window::update_clock()
