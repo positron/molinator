@@ -15,9 +15,6 @@ static const int DEF_WIDTH = 600;
 static const int DEF_HEIGHT = 620;
 static string DEF_TITLE = "Molinator";
 
-//global game over variable
-extern bool glob_game_over;
-
 /* Molinator_Window will manage the game from start to end, all it needs to do
  * is be created.
  */
@@ -59,9 +56,29 @@ class Molinator_Window : public Window
 		int sum_dist;      //sum of distance between click and center of mole
 		int num_clicks;    //number of clicks during the 60 sec game
 
+		//start screen objects
+		Button but_play;
+		In_box name_field;
+		Text instruct1; //lines of instruction text
+		Text instruct2;
+		Text instruct3;
+		Text instruct4;
+		Text instruct5;
+		Text instruct6;
+		Text instruct7;
+		Text instruct8;
+		Text instruct9;
+
+		//game objects
 		Text score_text;
 		Text clock_text;
-		Button but_play;
-		Image instruct;
-		In_box name_field;
+
+		//results screen objects
+		Text title;
+		Text stats;
+		Text num_moles;
+		Text precision;
+		Text accuracy;
+		Text score1;
+		vector<Text*> text_scores;
 };

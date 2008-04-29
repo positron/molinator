@@ -96,10 +96,8 @@ Mole* Grid::handle_mouse( int x, int y )
 	int col = y / (HEIGHT / COLS);
 	//check for range errors just in case (eg resized window)
 	if( row < 0 || row > 9 || col < 0 || col > 9 ) return NULL;
-//	cout << "click on grid (" << row << ", " << col << ") ";
 	Mole* m = contains( row, col );
 	if( m == NULL ) return NULL;
-//	if( m->hit_mole( x - row * (WIDTH/ROWS), y - col * (HEIGHT/COLS) ) )
   //only remove the mole if the user actually hit the mole, not if he just
 	//clicked in the grid
 	if( m->hit_mole( x, y ) )
@@ -126,8 +124,8 @@ void Grid::add_random_mole()
 		m = new Mole( center );
 	m->attach( * win );
 	grid[row][col] = m;
-	//add a callback for a random time interval between 1.3 and 2.3 seconds
-	double time = randint( 11 ) / 10.0 + 1.3;
+	//add a callback for a random time interval between 1.6 and 2.6 seconds
+	double time = randint( 11 ) / 10.0 + 1.6;
 	//we have to create a new to data because it will disappear with scope
 	TO_Data* dat = new TO_Data();
 	dat->row = row;

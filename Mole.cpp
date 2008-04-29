@@ -30,9 +30,9 @@ Mole::Mole( Point cen, int rad )
 	circle = new Circle( center, radius/2 );
 }
 
-Mole::Mole( Point cen, int rad, Color col, int pts, Color txt_col, Text* txt )
+Mole::Mole( Point cen, int rad, Color* col, int pts, Color* txt_col, Text* txt )
 	: center(cen), radius(rad), circle( new Circle( cen, rad / 2 ) ),
-		m_color(&col), num_points(pts), m_txt_col(&txt_col), m_points( txt )
+		m_color(col), num_points(pts), m_txt_col(txt_col), m_points( txt )
 {
 }
 

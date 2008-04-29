@@ -46,7 +46,7 @@ class Mole
 	public:
 		Mole( Point );
 		Mole( Point, int );
-		Mole( Point, int, Color, int, Color, Text* );
+		Mole( Point, int, Color*, int, Color*, Text* );
 		~Mole();
 		
 		inline int points() { return num_points; }

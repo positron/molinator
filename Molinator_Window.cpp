@@ -1,17 +1,33 @@
+#include <time.h>
 #include "../../std_lib_facilities.h"
 #include "Molinator_Window.h"
 #include "Mole.h"
 #include "Grid.h"
 #include "timer.h"
+#include "scores.h"
 
 Molinator_Window::Molinator_Window()
 	: Window( DEF_LOCATION, DEF_WIDTH, DEF_HEIGHT, DEF_TITLE ),
 		game(false),
 		but_play( Point(200, 400), 150, 20, "Play the game!", cb_play ),
-		instruct( Point(60,25), "instruct.jpg" ),
 		name_field( Point(200,300), 200, 30, "Enter your name" ),
-		clock_text( Point( DEF_WIDTH - 50, DEF_HEIGHT - 1 ), "00" ),
+		instruct1( Point(200,25), "Welcome to Molinator!" ),
+		instruct2( Point(30,75), "In this game, moles (circles) of different colors and sizes will appear in" ),
+		instruct3( Point(30,100), "random squares on a grid. The smaller the mole, the more points it is worth." ),
+		instruct4( Point(30,125), "The colors have no affect on the point value, except for the evil black" ),
+		instruct5( Point(30,150), "moles, which are worth -200 points. Each mole will disappear after a short" ),
+		instruct6( Point(30,175), "time, but some stay on the screen slightly longer than others. The game" ),
+		instruct7( Point(30,200), "lasts for 60 seconds, and more moles will appear later in the game. When you" ),
+		instruct8( Point(30,225), "have 10 seconds remaining, the game will start beeping every second. Click" ),
+		instruct9( Point(30,250), "as many moles as possible to rack up points and get a high score!" ),
+		clock_text( Point( DEF_WIDTH - 50, DEF_HEIGHT - 1 ), "00" ), //don't attach stuff from here on right away
 		score_text( Point( 2, DEF_HEIGHT - 1 ), "Score: 0" ),
+		title( Point(200,25), "High Scores" ),
+		stats( Point(200,300), "Statistics" ),
+		num_moles( Point(200, 325), "" ),
+		accuracy( Point(200, 350), "" ),
+		precision( Point(200, 375), "" ),
+		score1( Point(100,50), "" ),
 		clock(0), score(0), num_clicks(0), moles_whacked(0), sum_dist(0)
 {
 	grid = new Grid(); //why doesn't just grid(), work above?
@@ -22,20 +38,63 @@ Molinator_Window::Molinator_Window()
 Molinator_Window::~Molinator_Window()
 {
 	if( grid != NULL ) delete grid;
+	for( int i = 0; i < text_scores.size(); i++ )
+		delete text_scores[i];
+	cout << "done destroying" << endl;
 }
 
 void Molinator_Window::display_scores()
 {
-	//TODO: display top scores and game statistics: your score, accuracy, and precision
+	title.set_font_size(25);
+	stats.set_font_size(25);
+	attach( title );
+	attach( stats );
+	//TODO: attach game statistics
+	Score_IO::add_score( name, score );
+	vector<string> scores = Score_IO::top_scores();
+	cout << endl << "SIZE: " << scores.size() << endl;
+	score1.set_font_size(16);
+	attach( score1 );
+	score1.set_label( scores[0] );
+	//etc.. remember to check for scores.size() so you don't get a range error
+
+/*	for( int i = 0; i < scores.size(); i++ )
+	{
+		string txt = ". " + scores[i];
+		cout << txt << endl;
+		Text* t = new Text( Point( 30, 50 + 25*i ), txt );
+		t->set_font_size(16);
+		attach( *t );
+		text_scores.push_back( t );
+	}*/
 }
 
 void Molinator_Window::init()
 {
+	//seed random number generator
+	srand( time(NULL) );
 	Fl::redraw();
 	//add start page stuff to the window
 	attach( but_play );
-	attach( instruct );
 	attach( name_field );
+	instruct1.set_font_size(16);
+	instruct2.set_font_size(16);
+	instruct3.set_font_size(16);
+	instruct4.set_font_size(16);
+	instruct5.set_font_size(16);
+	instruct6.set_font_size(16);
+	instruct7.set_font_size(16);
+	instruct8.set_font_size(16);
+	instruct9.set_font_size(16);
+	attach( instruct1 );
+	attach( instruct2 );
+	attach( instruct3 );
+	attach( instruct4 );
+	attach( instruct5 );
+	attach( instruct6 );
+	attach( instruct7 );
+	attach( instruct8 );
+	attach( instruct9 );
 	//add callback so the window closes when we hit the x button
 	callback( *cb_click, this );
 	Fl::run();
@@ -49,12 +108,22 @@ void Molinator_Window::cb_play( Address, Address addr )
 //this function is called when the play button has been clicked
 void Molinator_Window::play()
 {
+	name = name_field.get_string();
+	if( name == "" ) name = "anonymous";
 	//TODO: get username from the In_Box and save it;
 	//TODO? if( ask("do you really be anonymous?" )
 	//detach everything on the start screen
 	detach( but_play );
-	detach( instruct );
 	detach( name_field );
+	detach( instruct1 );
+	detach( instruct2 );
+	detach( instruct3 );
+	detach( instruct4 );
+	detach( instruct5 );
+	detach( instruct6 );
+	detach( instruct7 );
+	detach( instruct8 );
+	detach( instruct9 );
 	//start clock
 	Fl::add_timeout( 1.0, * cb_update_clock, this );
 	//set the cursor to be a cross
@@ -124,7 +193,9 @@ void Molinator_Window::update_clock()
 	if( str.length() == 1 ) str = "0" + str;
 	clock_text.set_label( str );
 	Fl::redraw();
-	if( clock == 60 )
+	if( clock >= 50 )
+		cout << "\a";
+	if( clock == 10 )
 	{ 
 		end_game();
 		//cancel clock timeout
