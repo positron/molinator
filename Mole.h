@@ -7,13 +7,18 @@ using namespace Graph_lib;
 //forward declare Molinator_Window
 class Molinator_Window;
 
-//random point values - for each point value[i] multiply the moles radius
-//by the corresponding coefficient[i]
+/* With a single random int we can get a random point_val, along with the
+ * corresponding radius coefficient (higher points have smaller radii, which
+ * is why we multiply the radius for a 100 pt mole by .4) and text offset
+ * (which tells us where to put the text object displaying how many points
+ * the mole is worth
+ */
 static const int point_vals[] = { 5, 10, 20, 50, 100 };
 static const double point_radius_coef[] = { 1, .9, .75, .55, .4 };
 static const double text_offsets[] = { -3, -6, -5, -5, -9 };
 
-//random colors
+/* The colors and text colors work similarly to the arrays above
+ */
 static Color colors[] = { 
 	Color(Color::red), 
 	Color(Color::blue), 
@@ -31,6 +36,11 @@ static Color text_colors[] = {
 	Color(Color::black)
 };
 
+/* This struct contains all the properties of a mole that can be randomly set.
+ * Since only two values are truely random, the points and the color, a
+ * function populates Mole_Vals with the two random variables and their
+ * corresponding variables (offsets, radius, etc.)
+ */
 struct Mole_Vals
 {
 	int points;
@@ -41,6 +51,8 @@ struct Mole_Vals
 	Color* text_color;
 };
 
+/* In charge of drawing a mole on a window and detaching itself if it is hit.
+ */
 class Mole
 {
 	public:
@@ -58,13 +70,13 @@ class Mole
 		void attach( Molinator_Window& w );
 		void detach();
 	private:
-		Mole_Vals rand_vals();
+		Mole_Vals rand_vals();//returns a randomly populated Mole_Vals
 
 		Molinator_Window* win;
-		//points user gets when "whacked"
-		int num_points;
+
+		int num_points; //points user gets when whacked
 		Color* m_color;  //note, a pointer so we don't have to initalize it in the
-		Color* m_txt_col;//constructor, because there is not Color() constructor
+		Color* m_txt_col;//constructor, because there is no default Color() constructor
 
 		Point center;
 		int radius;

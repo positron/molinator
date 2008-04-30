@@ -8,7 +8,7 @@ class Molinator_Window;
 class Mole;
 class Grid;
 
-//consts
+//constants
 static const int ROWS = 10;
 static const int COLS = 10;
 static const int WIDTH = 600;
@@ -16,7 +16,7 @@ static const int HEIGHT = 600;
 
 /* Fltk callbacks only allow one argument to be passed to a callback. For some
  * functions we need more than one piece of data, this struct houses all those
- * variables so we can just pass this argument
+ * variables so we can just pass this struct as an argument. TimeOut Data
  */
 struct TO_Data
 {
@@ -44,11 +44,6 @@ class Grid
 
 		void attach( Molinator_Window& w );
 		void detach();
-
-		void test()
-		{
-			cerr << "here in grid test.";
-		}
 
 		void start_game();
 		void add_random_mole();

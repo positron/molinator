@@ -2,13 +2,17 @@
 
 namespace Score_IO
 {
+//the high scores file resides in the same directory as the game executable
 static const string SCORE_FILE = "scores.txt";
 
-//whatever happened to Java's good ol' String_Tokenizer?? :(
+/* This function returns a vector of strings containing the contents of every
+ * line of the file. Each string is a line.
+ */
 vector<string> read_lines()
 {
 	vector<string> v;
 	fstream file( SCORE_FILE.c_str(), ios_base::in );
+	//if there is no file return an empty vector
 	if( !file.is_open() ) return v;
 	string line;
 	while( !file.eof() )
@@ -17,9 +21,15 @@ vector<string> read_lines()
 		if( line != "" )
 			v.push_back( line );
 	}
+	//whatever happened to Java's good ol' String_Tokenizer?? :(
 	return v;
 }
 
+/* This function returns a vector of high score strings formatted like this:
+ * name                 score
+ * name two             score two
+ * ... etc
+ */
 vector<string> top_scores()
 {
 	vector<string> v;
@@ -27,12 +37,19 @@ vector<string> top_scores()
 	for( int i = 0; i < lines.size(); i+= 2 )
 	{
 		stringstream ss;
+		//format the scores
 		ss << setw(30) << left << lines[i+1] << lines[i];
 		v.push_back( ss.str() );
 	}
 	return v;
 }
 
+/* This function takes a new score and name and adds it in order to the high
+ * scores file. It reads the data currently in the file, decides where to
+ * insert the new name and score, and then truncates the file and writes back
+ * all the data. It will never leave the file with more than 5 scores or out
+ * of order scores.
+ */
 void add_score( string name, int new_score )
 {
 	//get lines in file before we truncate it
@@ -50,46 +67,32 @@ void add_score( string name, int new_score )
 	int insert;
 	for( insert = 0; insert < lines.size(); insert+= 2 )
 	{
-		// <= so the new score will be at the top (to make users happy)
+		// <= so the newest score will be at the top (to make users happy)
 		if( atoi( lines[insert].c_str() ) <= new_score )
 			break;
 	}
 	//now insert is the place where we want to insert into the file
-	cout << "lines size " << lines.size() << " " << insert << endl;
-	int added = 0;
+	int added = 0; //num of scores added so we don't go over 5 accidentally
 	for( int i = 0; i < lines.size() && i < 10; i+= 2 )
 	{
-		cout << "|" << insert << " " << i << " ";
+		//place to add the new name and score
 		if( insert == i && added < 5 )
 		{
 			added++;
 			fst << new_score << endl << name << endl;
 		}
-		//check if i != 8 so we don't add two entries even though we're on the
-		//fifth and final score to add to the file already
-		//OR if we're going to add another score to the end
+		//add all the old data (unless we're already at 5 scores)
 		if( added < 5 )
 		{
-			cout << "a";
 			added++;
 			fst << lines[i] << endl << lines[i+1] << endl;
 		}
-		cout << "|";
 	}
-	//if insert == lines.size() we "forgot" to add it to the end of the file
+	//if insert == size() we "forgot" to add it to the end of the file in loop
 	if( insert == lines.size() && added < 5 )
 	{
-		cout << " adding to end ";
 		fst << new_score << endl << name << endl;
 	}
 }
 
 };
-/* Example of the scores file: (note the spaces in the username)
- *
- * 10315 philip
- * 815 Dr. Daugherty
- * 300 eric
- * 0 noob
- * -400 lol_failz
- */

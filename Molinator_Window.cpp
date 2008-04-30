@@ -3,103 +3,157 @@
 #include "Molinator_Window.h"
 #include "Mole.h"
 #include "Grid.h"
-#include "timer.h"
 #include "scores.h"
 
 Molinator_Window::Molinator_Window()
-	: Window( DEF_LOCATION, DEF_WIDTH, DEF_HEIGHT, DEF_TITLE ),
-		game(false),
-		but_play( Point(200, 400), 150, 20, "Play the game!", cb_play ),
-		name_field( Point(200,300), 200, 30, "Enter your name" ),
-		instruct1( Point(200,25), "Welcome to Molinator!" ),
-		instruct2( Point(30,75), "In this game, moles (circles) of different colors and sizes will appear in" ),
-		instruct3( Point(30,100), "random squares on a grid. The smaller the mole, the more points it is worth." ),
-		instruct4( Point(30,125), "The colors have no affect on the point value, except for the evil black" ),
-		instruct5( Point(30,150), "moles, which are worth -200 points. Each mole will disappear after a short" ),
-		instruct6( Point(30,175), "time, but some stay on the screen slightly longer than others. The game" ),
-		instruct7( Point(30,200), "lasts for 60 seconds, and more moles will appear later in the game. When you" ),
-		instruct8( Point(30,225), "have 10 seconds remaining, the game will start beeping every second. Click" ),
-		instruct9( Point(30,250), "as many moles as possible to rack up points and get a high score!" ),
-		clock_text( Point( DEF_WIDTH - 50, DEF_HEIGHT - 1 ), "00" ), //don't attach stuff from here on right away
+	:Window( DEF_LOCATION, DEF_WIDTH, DEF_HEIGHT, DEF_TITLE ),
+
+		//Start Screen
+		background_top(Point(0,0), "Molinator_start_top.jpg"),
+		background_bottom(Point(0,225), "Molinator_start_bottom.jpg"),
+		but_play( Point(225,500), 150, 30, "Play the game!", cb_play ),
+		name_field( Point(200,450), 200, 30, "" ),
+		enter_name( Point(245,445), "Enter Your Name:" ),
+
+		//Game Screen
+		clock_text( Point( DEF_WIDTH - 50, DEF_HEIGHT - 1 ), "00" ),
 		score_text( Point( 2, DEF_HEIGHT - 1 ), "Score: 0" ),
-		title( Point(200,25), "High Scores" ),
-		stats( Point(200,300), "Statistics" ),
-		num_moles( Point(200, 325), "" ),
-		accuracy( Point(200, 350), "" ),
-		precision( Point(200, 375), "" ),
-		score1( Point(100,50), "" ),
-		clock(0), score(0), num_clicks(0), moles_whacked(0), sum_dist(0)
+
+		//Final Screen
+		background_final( Point(0,0), "Molinator_finish.jpg"),
+		title( Point(225,225), "High Scores" ),
+		stats( Point(240,450), "Statistics" ),
+		your_score( Point(150, 500), "" ),//set_label() called in display_scores
+		num_moles( Point(150, 525), "" ),
+		accuracy( Point(150, 550), "" ),
+		precision( Point(150, 575), "" ),
+		score1( Point(100,275), "" ),
+		score2( Point(100,300), "" ),
+		score3( Point(100,325), "" ),
+		score4( Point(100,350), "" ),
+		score5( Point(100,375), "" ),
+		//various variables
+		clock(0), score(0), num_clicks(0), moles_whacked(0), sum_dist(0), game(false)
 {
-	grid = new Grid(); //why doesn't just grid(), work above?
-	//TODO: figure out how to make the window so you can't resize it
+	grid = new Grid();
 	init();
 }
 
 Molinator_Window::~Molinator_Window()
 {
 	if( grid != NULL ) delete grid;
-	for( int i = 0; i < text_scores.size(); i++ )
-		delete text_scores[i];
-	cout << "done destroying" << endl;
 }
 
+/* Calculates statistics, updates high scores file, and displays the high
+ * scores and statistics.
+ */
 void Molinator_Window::display_scores()
 {
-	title.set_font_size(25);
-	stats.set_font_size(25);
+	if( num_clicks == 0 ) num_clicks++; //to prevent dividing by 0
+
+	//attach "High Scores" and "Statistics" titles
+	background_final.set_fill_color(Color::black);
+	attach( background_final );
+	title.set_font_size(30);
+	title.set_color(Color::white);
+	stats.set_font_size(30);
+	stats.set_color(Color::white);
 	attach( title );
 	attach( stats );
-	//TODO: attach game statistics
+
+	//attach your score
+	your_score.set_color(Color::white);
+	your_score.set_font(Font::courier_bold);
+	your_score.set_font_size(18);
+	your_score.set_label( "Your Score: " + int_to_string( score ) + " Points" );
+
+	//attach the number of moles you whacked
+	num_moles.set_color(Color::white);
+	num_moles.set_font(Font::courier_bold);
+	num_moles.set_font_size(18);
+	num_moles.set_label( "Moles Whacked: " + int_to_string( moles_whacked ) );
+
+	//attach your accuracy
+	accuracy.set_color(Color::white);
+	accuracy.set_font(Font::courier_bold);
+	accuracy.set_font_size(18);
+	//add 0.005 because a conversion to a double to int does not round, it just
+	//chops off everything past the decimal. This will make it round correctly
+	int acc = static_cast<int>(100*(static_cast<double>(moles_whacked)/num_clicks+0.005));
+	accuracy.set_label( "Accuracy: " + int_to_string( acc ) + "%" );
+
+	//attach your precision - average distance from the center of the mole
+	precision.set_color(Color::white);
+	precision.set_font(Font::courier_bold);
+	precision.set_font_size(18);
+	precision.set_label( "Precision: " + int_to_string( sum_dist/num_clicks ) + " Pixels" );
+
+	attach( your_score);
+	attach( num_moles );
+	attach( accuracy );
+	attach( precision );
+	//add score to high scores list
 	Score_IO::add_score( name, score );
+	//retrieve top scores
 	vector<string> scores = Score_IO::top_scores();
-	cout << endl << "SIZE: " << scores.size() << endl;
-	score1.set_font_size(16);
+
+	//Attach the high scores---------------------------------------
+	score1.set_font_size(18);
+	score1.set_font(Font::courier_bold);
+	score1.set_color(Color::white);
 	attach( score1 );
 	score1.set_label( scores[0] );
-	//etc.. remember to check for scores.size() so you don't get a range error
 
-/*	for( int i = 0; i < scores.size(); i++ )
-	{
-		string txt = ". " + scores[i];
-		cout << txt << endl;
-		Text* t = new Text( Point( 30, 50 + 25*i ), txt );
-		t->set_font_size(16);
-		attach( *t );
-		text_scores.push_back( t );
-	}*/
+	//check if there is a score2 to display
+	if( scores.size() < 2 ) return;
+	score2.set_font_size(18);
+	score2.set_font(Font::courier_bold);
+	score2.set_color(Color::white);
+	attach( score2 );
+	score2.set_label( scores[1] );
+
+	if( scores.size() < 3 ) return;
+	score3.set_font_size(18);
+	score3.set_font(Font::courier_bold);
+	score3.set_color(Color::white);
+	attach( score3 );
+	score3.set_label( scores[2] );
+
+	if( scores.size() < 4 ) return;
+	score4.set_font_size(18);
+	score4.set_font(Font::courier_bold);
+	score4.set_color(Color::white);
+	attach( score4 );
+	score4.set_label( scores[3] );
+
+	if( scores.size() < 5 ) return;
+	score5.set_font_size(18);
+	score5.set_font(Font::courier_bold);
+	score5.set_color(Color::white);
+	attach( score5 );
+	score5.set_label( scores[4] );
 }
 
+//Display the start screen
 void Molinator_Window::init()
 {
+	//set background color to black
+	color(0);
 	//seed random number generator
 	srand( time(NULL) );
 	Fl::redraw();
-	//add start page stuff to the window
+	enter_name.set_color( Color::white );
+	attach( background_top );
+	attach( background_bottom );
 	attach( but_play );
 	attach( name_field );
-	instruct1.set_font_size(16);
-	instruct2.set_font_size(16);
-	instruct3.set_font_size(16);
-	instruct4.set_font_size(16);
-	instruct5.set_font_size(16);
-	instruct6.set_font_size(16);
-	instruct7.set_font_size(16);
-	instruct8.set_font_size(16);
-	instruct9.set_font_size(16);
-	attach( instruct1 );
-	attach( instruct2 );
-	attach( instruct3 );
-	attach( instruct4 );
-	attach( instruct5 );
-	attach( instruct6 );
-	attach( instruct7 );
-	attach( instruct8 );
-	attach( instruct9 );
+	attach( enter_name );
 	//add callback so the window closes when we hit the x button
 	callback( *cb_click, this );
 	Fl::run();
 }
 
+//this callback is called when the play button is clicked
 void Molinator_Window::cb_play( Address, Address addr )
 {
 	static_cast<Molinator_Window*>(addr)->play();
@@ -108,23 +162,18 @@ void Molinator_Window::cb_play( Address, Address addr )
 //this function is called when the play button has been clicked
 void Molinator_Window::play()
 {
+	//set the color of the window back to gray
+	color(50);
 	name = name_field.get_string();
-	if( name == "" ) name = "anonymous";
-	//TODO: get username from the In_Box and save it;
-	//TODO? if( ask("do you really be anonymous?" )
+	//if the user didn't enter a name give them one
+	if( name == "" ) name = "Anonymous";
 	//detach everything on the start screen
+	detach( background_top );
+	detach( background_bottom );
 	detach( but_play );
 	detach( name_field );
-	detach( instruct1 );
-	detach( instruct2 );
-	detach( instruct3 );
-	detach( instruct4 );
-	detach( instruct5 );
-	detach( instruct6 );
-	detach( instruct7 );
-	detach( instruct8 );
-	detach( instruct9 );
-	//start clock
+	detach( enter_name );
+	//start clock - updates every 1.0 seconds
 	Fl::add_timeout( 1.0, * cb_update_clock, this );
 	//set the cursor to be a cross
 	cursor( FL_CURSOR_CROSS );
@@ -140,11 +189,16 @@ void Molinator_Window::play()
 	grid->start_game();
 }
 
+/* This function overrides Fl_Window's handl(int) function that is called
+ * whenever there is an event.  We are only interested in mouse releases
+ * while the game is running, every other even is propogated down to Fl_window
+ */
 int Molinator_Window::handle( int event )
 {
 	//if the event is not a click or if the game isn't running we aren't interested in it
 	if( event != FL_RELEASE || !game )
-		return Window::handle(event);
+		return Window::handle(event); //propogate the event
+
 	Mole* m = grid->handle_mouse( Fl::event_x(), Fl::event_y() );
 	num_clicks++;
 	//if we clicked on a Mole, delete it and add another one
@@ -166,26 +220,17 @@ int Molinator_Window::handle( int event )
 	return Window::handle(event);
 }
 
+//called at when the game ends
 void Molinator_Window::end_game()
 {
+	//set the cursor back to normal
 	cursor( FL_CURSOR_DEFAULT );
-	//stupid hack because our cb code has issues
 	game = false;
 	grid->detach();
-//	delete grid;
-//	grid = NULL;
-//what?? even though we just deleted grid we can still call the method test and it couts stuff..??
-//	grid->test(); //This is dumb...
 	display_scores();
-	//TODO: don't just cout this, display it on the final screen
-	if( num_clicks == 0 ) num_clicks++; //to prevent floating point exception
-	cout << "\n-----FINAL STATS------\n";
-	cout << "score: " << score << "\n";
-	cout << "moles whacked: " << moles_whacked << "\n";
-	cout << "accuracy: " << static_cast<int>(100*(static_cast<double>(moles_whacked)/num_clicks+0.005)) << "%\n";
-	cout << "precision: " << (sum_dist/num_clicks) << "px\n";
 }
 
+//called every second to update the clock
 void Molinator_Window::update_clock()
 {
 	clock++;
@@ -193,9 +238,9 @@ void Molinator_Window::update_clock()
 	if( str.length() == 1 ) str = "0" + str;
 	clock_text.set_label( str );
 	Fl::redraw();
-	if( clock >= 50 )
+	if( clock >= 50 ) //make the bell beep for the last 10 seconds
 		cout << "\a";
-	if( clock == 10 )
+	if( clock == 60 ) //your minute is up!
 	{ 
 		end_game();
 		//cancel clock timeout
@@ -203,19 +248,21 @@ void Molinator_Window::update_clock()
 	}
 }
 
-//called when the x button (top right hand corner of window) is hit... I think
+//called when the x button (top right hand corner of window) is hit
 void Molinator_Window::cb_click( Fl_Widget*, void* addr )
 {
+	//hide the window
 	static_cast<Molinator_Window*>(addr)->hide();
 }
 
 void Molinator_Window::cb_update_clock( void* addr )
 {
+	//accurately repeat this timeout ever second
 	Fl::repeat_timeout( 1.0, *cb_update_clock, addr );
 	static_cast<Molinator_Window*>(addr)->update_clock();
 }
 
-//helper function
+//aptly named helper function
 string Molinator_Window::int_to_string( int i )
 {
 	//if this is the only way to do this C++ is retarded

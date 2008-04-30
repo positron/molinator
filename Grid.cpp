@@ -10,21 +10,12 @@ Grid::Grid()
 //precondition: detach has already been called
 Grid::~Grid()
 {
-	//delete any Moles left in the grid
-/*	Mole* m;
-	for( int r = 0; r < ROWS; r++ )
-	{
-		for( int c = 0; c < COLS; c++ )
-		{
-			m = grid[r][c];
-			if( m != NULL ) delete m;
-		}
-	}
-	*/
-//	if( grid_lines != NULL ) 
 		delete grid_lines;
 }
 
+/* Set Molinator_Window so everything knows what to draw to and draw
+ * the grid lines.
+ */
 void Grid::attach( Molinator_Window& w )
 {
 	win = &w;
@@ -43,6 +34,8 @@ void Grid::attach( Molinator_Window& w )
 	win->attach(*grid_lines);
 }
 
+/* Detach the grid lines and detach and delete any moles left in the grid
+ */
 void Grid::detach()
 {
 	//detach and delete any Moles left in the grid
@@ -60,19 +53,23 @@ void Grid::detach()
 			}
 		}
 	}
+	//detach the grid lines
 	if( win != NULL && grid_lines != NULL ) win->detach( *grid_lines );
 }
 
+//returns true if grid[row][col] is empty
 bool Grid::is_empty( int row, int col )
 {
 	return ( contains( row, col ) == NULL ) ? true : false;
 }
 
+//returns the contents of grid[row][col]
 Mole* Grid::contains( int row, int col )
 {
 	return grid[row][col];
 }
 
+//adds Mole m to grid[r][c] if it is empty, otherwise returns false
 bool Grid::add( Mole* m, int r, int c )
 {
 	if( !is_empty( r, c ) ) return false;
@@ -80,21 +77,23 @@ bool Grid::add( Mole* m, int r, int c )
 	return true;
 }
 
-//returns the Mole in the grid, or NULL if it is empty
+//detaches and removes the Mole in the grid, or NULL if it is empty
 Mole* Grid::remove( int r, int c )
 {
-	//just returns null if it is empty
 	Mole* ret = grid[r][c];
 	if( ret != NULL ) ret->detach();
 	grid[r][c] = NULL;
 	return ret;
 }
 
+/* Handle a mouse click at (x,y). Detaches, deletes, and returns the Mole the
+ * click hit or NULL if the click hit nothing.
+ */
 Mole* Grid::handle_mouse( int x, int y )
 {
 	int row = x / (WIDTH / ROWS);
 	int col = y / (HEIGHT / COLS);
-	//check for range errors just in case (eg resized window)
+	//check for range errors just in case (eg clicked on lower 20 pixels)
 	if( row < 0 || row > 9 || col < 0 || col > 9 ) return NULL;
 	Mole* m = contains( row, col );
 	if( m == NULL ) return NULL;
@@ -105,6 +104,9 @@ Mole* Grid::handle_mouse( int x, int y )
 	return NULL;
 }
 
+/* Adds a random mole to the grid in a random empty square and set up a
+ * callback to move the mole in a random time interval.
+ */
 void Grid::add_random_mole()
 {
 	//get row and col that isn't already occupied
@@ -114,6 +116,7 @@ void Grid::add_random_mole()
 		row = randint( ROWS );
 		col = randint( COLS );
 	} while ( !is_empty( row, col ) );
+	//calculate center and radius
 	Point center( (row+0.5)*WIDTH/ROWS, (col+0.5)*HEIGHT/COLS );
 	int rad = WIDTH/ROWS/2;
 	Mole* m;
@@ -126,7 +129,7 @@ void Grid::add_random_mole()
 	grid[row][col] = m;
 	//add a callback for a random time interval between 1.6 and 2.6 seconds
 	double time = randint( 11 ) / 10.0 + 1.6;
-	//we have to create a new to data because it will disappear with scope
+	//we have to create a new to_data so it doesn't disappear with scope
 	TO_Data* dat = new TO_Data();
 	dat->row = row;
 	dat->col = col;
@@ -134,6 +137,9 @@ void Grid::add_random_mole()
 	Fl::add_timeout( time, * cb_timeout, dat );
 }
 
+/* If a moel still exists and row, col, remove the mole and add
+ * another random mole.
+ */
 void Grid::timeout_remove_mole( int row, int col )
 {
 	//if the mole is already gone, do nothing
@@ -143,6 +149,7 @@ void Grid::timeout_remove_mole( int row, int col )
 	add_random_mole();
 }
 
+//Add the first random mole and set up callbacks to add other moles during gameplay
 void Grid::start_game()
 {
 	add_random_mole();
@@ -155,23 +162,21 @@ void Grid::start_game()
 	Fl::add_timeout( 50.0, * cb_add_random_mole, this );
 }
 
+//This callback merely calls add_random_mole()
 void Grid::cb_add_random_mole( void* addr )
 {
 	Grid* g = static_cast<Grid*>(addr);
-	if( g == NULL ) return;
 	if( !g->window()->get_game() ) return;
 	g->add_random_mole();
 }
 
+//this callback calls timeout_remove_mole()
 void Grid::cb_timeout( void* addr )
 {
-	if( addr == NULL ) return;
 	TO_Data* dat = static_cast<TO_Data*>(addr);
 	Grid* g = dat->grid;
-	if( g == NULL ) return;
-	if( static_cast<TO_Data*>(addr)->grid == NULL ) return;
+	//annoying bug: check if the game is over already
 	if( !g->window()->get_game() ) return;
-	//annoying bug: check if the grid has been removed in the intervening time
 	g->timeout_remove_mole( dat->row, dat->col );
 	//since we had to make a new TO_Data we have to free up it's memory
 	delete addr;
