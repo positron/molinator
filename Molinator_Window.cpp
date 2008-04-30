@@ -11,7 +11,7 @@ Molinator_Window::Molinator_Window()
 		//Start Screen
 		background_top(Point(0,0), "Molinator_start_top.jpg"),
 		background_bottom(Point(0,225), "Molinator_start_bottom.jpg"),
-		but_play( Point(225,500), 150, 30, "Play the game!", cb_play ),
+		but_play( Point(225,500), 150, 30, "Play Molinator!", cb_play ),
 		name_field( Point(200,450), 200, 30, "" ),
 		enter_name( Point(245,445), "Enter Your Name:" ),
 
